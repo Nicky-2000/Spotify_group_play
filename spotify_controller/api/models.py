@@ -11,6 +11,11 @@ def generate_unique_code():
     while True:
         # will generate a random code only using upper case ascii characters
         code = ''.join(random.choices(string.ascii_uppercase, k=lenght))
+        # room.objects gives me all the room objects
+        if Room.objects.fiter(code=code).count() == 0:
+            break
+
+    return code
 
 
 class Room(models.Model):
