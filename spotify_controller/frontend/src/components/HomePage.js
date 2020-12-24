@@ -9,7 +9,7 @@ import {
 } from "react-router-dom";
 // These pages are going to be routed from here
 import RoomJoinPage from "./RoomJoinPage";
-import CreatRoomPage from "./CreatRoomPage";
+import CreateRoomPage from "./CreateRoomPage";
 
 export default class HomePage extends Component {
   constructor(props) {
@@ -26,7 +26,7 @@ export default class HomePage extends Component {
             <p>This is the HomePage</p>
           </Route>
           <Route path="/join" component={RoomJoinPage} />
-          <Route path="/create" component={CreatRoomPage} />
+          <Route path="/create" component={CreateRoomPage} />
         </Switch>
       </Router>
     );
