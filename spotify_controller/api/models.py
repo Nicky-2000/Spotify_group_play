@@ -44,6 +44,7 @@ class Room(models.Model):
 # A page that you would usually have to sign into but you dont have to
 # because its the same device
 
-# I dont have to sign into facebook each time because its still in the same session
+# I dont have to sign into facebook each time because
+# its still in the same session
 
 # sessions have to do with a unique key
