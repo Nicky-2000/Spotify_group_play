@@ -2,7 +2,6 @@ from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Room
-from django.shortcuts import render
 from rest_framework import generics, status
 from .serializers import RoomSerializer, CreateRoomSerializer,\
     UpdateRoomSerializer
@@ -51,7 +50,7 @@ class JoinRoom(APIView):
         if code is not None:
             room_result = Room.objects.filter(code=code)
             if len(room_result) > 0:
-                room = room_result[0]
+                # room = room_result[0]
                 self.request.session['room_code'] = code
                 return Response({'message': 'Room Joined :)'},
                                 status=status.HTTP_200_OK)
@@ -134,7 +133,7 @@ class UpdateRoom(APIView):
     serializer_class = UpdateRoomSerializer
     # patch is just modifying something
 
-    def patch(self, request):
+    def patch(self, request, format=None):
         # Make sure the user has a session
         if not self.request.session.exists(self.request.session.session_key):
             self.request.session.create()
@@ -158,7 +157,7 @@ class UpdateRoom(APIView):
             room.guest_can_pause = guest_can_pause
             room.votes_to_skip = votes_to_skip
             room.save(update_fields=['guest_can_pause', 'votes_to_skip'])
-            return Response(RoomSerializer(room.data),
+            return Response(RoomSerializer(room).data,
                             status=status.HTTP_200_OK)
         return Response({"Bad Request": "Invalid Data..."},
                         status=status.HTTP_400_BAD_REQUEST)

@@ -17,13 +17,15 @@ export default class Room extends Component {
     };
     // Match stores the information about how we got to this page from the react router
     this.roomCode = this.props.match.params.roomCode;
-    // Gets the information and rerender the component since the state was changed
-    this.getRoomDetails();
 
     this.leaveButtonPressed = this.leaveButtonPressed.bind(this);
     this.updateShowSettings = this.updateShowSettings.bind(this);
     this.renderSettingsButton = this.renderSettingsButton.bind(this);
     this.renderSettings = this.renderSettings.bind(this);
+    this.getRoomDetails = this.getRoomDetails.bind(this);
+
+    // Gets the information and rerender the component since the state was changed
+    this.getRoomDetails();
   }
   getRoomDetails() {
     fetch("/api/get~room" + "?code=" + this.roomCode)
@@ -68,7 +70,7 @@ export default class Room extends Component {
             votesToSkip={this.state.votesToSkip}
             guestCanPause={this.state.guestCanPause}
             roomCode={this.roomCode}
-            updateCallback={null}
+            updateCallback={this.getRoomDetails}
           ></CreateRoomPage>
         </Grid>
         <Grid item xs={12} align="center">

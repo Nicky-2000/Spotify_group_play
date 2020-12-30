@@ -28,7 +28,7 @@ export default class HomePage extends Component {
   // async tells the program that it doesnt need to wait for this to finish before it can execute other stuff
 
   async componentDidMount() {
-    fetch("api/is~user~in~room")
+    fetch("/api/is~user~in~room")
       .then((response) => response.json())
       .then((data) => {
         this.setState({ roomCode: data.code });
