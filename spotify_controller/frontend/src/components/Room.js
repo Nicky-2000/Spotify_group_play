@@ -5,6 +5,7 @@ import React, { Component } from "react";
 import { Grid, Button, Typography } from "@material-ui/core";
 import SettingsTwoToneIcon from "@material-ui/icons/SettingsTwoTone";
 import CreateRoomPage from "./CreateRoomPage";
+import MusicPlayer from "./MusicPlayer";
 
 export default class Room extends Component {
   constructor(props) {
@@ -14,6 +15,8 @@ export default class Room extends Component {
       guestCanPause: false,
       isHost: false,
       showSettings: false,
+      spotifyAuthenticated: false,
+      song: {},
     };
     // Match stores the information about how we got to this page from the react router
     this.roomCode = this.props.match.params.roomCode;
@@ -22,10 +25,19 @@ export default class Room extends Component {
     this.updateShowSettings = this.updateShowSettings.bind(this);
     this.renderSettingsButton = this.renderSettingsButton.bind(this);
     this.renderSettings = this.renderSettings.bind(this);
+    this.authenticateSpotify = this.authenticateSpotify.bind(this);
     this.getRoomDetails = this.getRoomDetails.bind(this);
-
+    this.getCurrentSong = this.getCurrentSong.bind(this);
     // Gets the information and rerender the component since the state was changed
     this.getRoomDetails();
+  }
+  componentDidMount() {
+    // this calls the getCurrentSong function every 1000 ms
+    // this is the pully technique (websockets are bettteerrr)
+    this.interval = setInterval(this.getCurrentSong, 1000);
+  }
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
   getRoomDetails() {
     fetch("/api/get~room" + "?code=" + this.roomCode)
@@ -43,8 +55,41 @@ export default class Room extends Component {
           guestCanPause: data.guest_can_pause,
           isHost: data.is_host,
         });
+        if (this.state.isHost) {
+          this.authenticateSpotify();
+        }
       });
   }
+  authenticateSpotify() {
+    // send request to back end to verify if the host
+    fetch("/spotify/is-authenticated")
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState({ spotifyAuthenticated: data.status });
+        if (!data.status) {
+          fetch("/spotify/get-auth-url")
+            .then((response) => response.json())
+            .then((data) => {
+              //redirects us to the spotify authentication page
+              window.location.replace(data.url);
+            });
+        }
+      });
+  }
+  getCurrentSong() {
+    fetch("/spotify/current-song")
+      .then((response) => {
+        if (!response.ok) {
+          return {};
+        } else {
+          return response.json();
+        }
+      })
+      .then((data) => {
+        this.setState({ song: data });
+      });
+  }
+
   leaveButtonPressed() {
     const requestOptions = {
       method: "POST",
@@ -112,21 +157,7 @@ export default class Room extends Component {
             Code: {this.roomCode}
           </Typography>
         </Grid>
-        <Grid item xs={12} align="center">
-          <Typography variant="h6" component={"h6"}>
-            Votes: {this.state.votesToSkip}
-          </Typography>
-        </Grid>
-        <Grid item xs={12} align="center">
-          <Typography variant="h6" component={"h6"}>
-            Guests can pause: {this.state.guestCanPause.toString()}
-          </Typography>
-        </Grid>
-        <Grid item xs={12} align="center">
-          <Typography variant="h6" component={"h6"}>
-            Host: {this.state.isHost.toString()}
-          </Typography>
-        </Grid>
+        <MusicPlayer {...this.state.song} />
         {/* Conditionally show the settings button if the user
         is the host */}
         {this.state.isHost ? this.renderSettingsButton() : null}
