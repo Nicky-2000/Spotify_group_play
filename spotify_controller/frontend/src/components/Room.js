@@ -157,7 +157,7 @@ export default class Room extends Component {
             Code: {this.roomCode}
           </Typography>
         </Grid>
-        <MusicPlayer {...this.state.song} />
+        <MusicPlayer {...this.state.song} {...this.state} />
         {/* Conditionally show the settings button if the user
         is the host */}
         {this.state.isHost ? this.renderSettingsButton() : null}

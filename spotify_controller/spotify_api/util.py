@@ -64,7 +64,6 @@ def refresh_spotify_token(session_id):
     access_token = response.get('access_token')
     token_type = response.get('token_type')
     expires_in = response.get('expires_in')
-    refresh_token = response.get('refresh_token')
 
     update_or_create_user_tokens(
         session_id, access_token, token_type, expires_in, refresh_token)
@@ -79,12 +78,23 @@ def execute_spotify_api_request(session_id, endpoint, method='GET'):
                'Authorization': "Bearer " + tokens.access_token}
     if method == 'POST':
         post(BASE_URL + endpoint, headers=headers)
-    if 'PUT':
-        put(BASE_URL, endpoint, headers=headers)
+    if method == 'PUT':
+        print("yes")
+        put(BASE_URL + endpoint, headers=headers)
     if method == 'GET':
         response = get(BASE_URL + endpoint, {}, headers=headers)
+        print("no")
         try:
-            print("here")
             return response.json()
         except:
             return {'Error': 'Issue with requst'}
+
+def toggle_play_pause_song(session_id, play):
+    if play:
+        endpoint = "player/play"
+        execute_spotify_api_request(session_id, endpoint, 'PUT')
+        return
+    else:
+        endpoint = "player/pause"
+        execute_spotify_api_request(session_id, endpoint, 'PUT')
+        return

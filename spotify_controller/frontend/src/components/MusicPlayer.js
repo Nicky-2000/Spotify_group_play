@@ -13,7 +13,30 @@ import SkipNextIcon from "@material-ui/icons/SkipNext";
 export default class MusicPlayer extends Component {
   constructor(props) {
     super(props);
+    this.getButtonColor = this.getButtonColor.bind(this);
   }
+  pauseSong() {
+    const requestOptions = {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+    };
+    fetch("/spotify/pause-song", requestOptions);
+  }
+  playSong() {
+    const requestOptions = {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+    };
+    fetch("/spotify/play-song", requestOptions);
+  }
+  getButtonColor() {
+    if (this.props.isHost) {
+      return "secondary";
+    } else {
+      return this.props.guestCanPause ? "secondary" : "disabled";
+    }
+  }
+
   render() {
     // need a value out of 100(percentage) for the linear progress of the song
     const songProgress = (this.props.time / this.props.duration) * 100;
@@ -31,8 +54,16 @@ export default class MusicPlayer extends Component {
               {this.props.artist}
             </Typography>
             <div>
-              <IconButton>
-                {this.props.is_playing ? <PauseIcon /> : <PlayArrowIcon />}
+              <IconButton
+                onClick={() => {
+                  this.props.is_playing ? this.pauseSong() : this.playSong();
+                }}
+              >
+                {this.props.is_playing ? (
+                  <PauseIcon color={this.getButtonColor()} />
+                ) : (
+                  <PlayArrowIcon color={this.getButtonColor()} />
+                )}
               </IconButton>
               <IconButton>
                 <SkipNextIcon />
