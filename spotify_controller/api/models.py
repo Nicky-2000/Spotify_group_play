@@ -37,6 +37,7 @@ class Room(models.Model):
     # Auto_now_add stores the time that the room was created
     created_at = models.DateTimeField(auto_now_add=True)
 
+    current_song = models.CharField(max_length=50, null=True)
     # you can add methods on the models
     # in Django we want FAT models and thin views
 

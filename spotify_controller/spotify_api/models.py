@@ -1,5 +1,5 @@
 from django.db import models
-
+from api.models import Room
 # Create your models here.
 
 
@@ -10,3 +10,23 @@ class SpotifyToken(models.Model):
     refresh_token = models.CharField(max_length=150)
     expires_in = models.DateTimeField()
     token_type = models.CharField(max_length=50)
+
+class Vote(models.Model):
+    # need to clear the votes when a new song comes on
+    user = models.CharField(max_length=50, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    song_id = models.CharField(max_length=50)
+
+
+    # need to pass an instance of another object (Room object) to the Vote model.
+    # stores a referece to the room in the vote. We can access the info about the room
+    # from the Vote
+    # ondelete == CASCADE... CASCADE DOWN... any vote associated with a room is deleted when the 
+    # Room object is deleted.
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+
+class Vote_back(models.Model):
+    user = models.CharField(max_length=50, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    song_id = models.CharField(max_length=50)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)

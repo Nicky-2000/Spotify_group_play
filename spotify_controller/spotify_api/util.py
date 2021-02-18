@@ -77,17 +77,18 @@ def execute_spotify_api_request(session_id, endpoint, method='GET'):
     headers = {'Content-Type': 'application/json',
                'Authorization': "Bearer " + tokens.access_token}
     if method == 'POST':
-        post(BASE_URL + endpoint, headers=headers)
-    if method == 'PUT':
-        print("yes")
-        put(BASE_URL + endpoint, headers=headers)
-    if method == 'GET':
+        print("Trying POST: " + BASE_URL + endpoint)
+        response = post(BASE_URL + endpoint, headers=headers)
+        print(response)
+    elif method == 'PUT':
+        response = put(BASE_URL + endpoint, headers=headers)
+        print(response)
+    elif method == 'GET':
         response = get(BASE_URL + endpoint, {}, headers=headers)
-        print("no")
         try:
             return response.json()
         except:
-            return {'Error': 'Issue with requst'}
+            return {'Error': 'Issue with request'}
 
 def toggle_play_pause_song(session_id, play):
     if play:
@@ -98,3 +99,12 @@ def toggle_play_pause_song(session_id, play):
         endpoint = "player/pause"
         execute_spotify_api_request(session_id, endpoint, 'PUT')
         return
+
+def skip_song(session_id, back=False):
+    tokens = get_user_tokens(session_id)
+    headers = {'Content-Type': 'application/json',
+               'Authorization': "Bearer " + tokens.access_token}
+    if back:
+        response = post("https://api.spotify.com/v1/me/player/previous", headers=headers)
+    else:
+        response = post("https://api.spotify.com/v1/me/player/next", headers=headers)
