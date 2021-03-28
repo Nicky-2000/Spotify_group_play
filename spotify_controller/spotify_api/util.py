@@ -3,6 +3,7 @@ from django.utils import timezone
 from datetime import timedelta
 from .credentials import CLIENT_ID, CLIENT_SECRET
 from requests import post, put, get
+import math
 
 BASE_URL = "http://api.spotify.com/v1/me/"
 
@@ -108,3 +109,14 @@ def skip_song(session_id, back=False):
         response = post("https://api.spotify.com/v1/me/player/previous", headers=headers)
     else:
         response = post("https://api.spotify.com/v1/me/player/next", headers=headers)
+
+def seek_in_song(session_id, ms):
+    ms = float(ms)
+    tokens = get_user_tokens(session_id)
+    headers = {'Content-Type': 'application/json',
+               'Authorization': "Bearer " + tokens.access_token}
+    url = f"https://api.spotify.com/v1/me/player/seek?position_ms={math.floor(ms)}"
+    
+    response = put(url, headers=headers)
+    print(response)
+    return response

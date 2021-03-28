@@ -11,4 +11,5 @@ urlpatterns = [
     path('current-pod', CurrentPod.as_view()),
     path('skip-song', SkipSong.as_view()),
     path('skip-to-previous-song', SkipToPreviousSong.as_view()),
+    path('seek', SeekToPosition.as_view())
 ]

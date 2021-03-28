@@ -91,7 +91,9 @@ class CurrentSong(APIView):
         response = execute_spotify_api_request(host, endpoint, 'GET')
         if 'error' in response or 'item' not in response:
             # this is if there is no song currently playing song
+            print('no content')
             return Response({}, status=status.HTTP_204_NO_CONTENT)
+            
 
         item = response.get('item')
         duration = item.get('duration_ms')
@@ -214,4 +216,23 @@ class SkipToPreviousSong(APIView):
                         room=room, song_id=room.current_song)
             vote_back.save()
             return Response({}, status.HTTP_200_OK)
+
+class SeekToPosition(APIView):
+    # def put(self, request, format=None):
+    #     room_code = self.request.session.get('room_code')
+    #     room = Room.objects.filter(code=room_code)[0]
+    #     if self.request.session.session_key == room.host:
+    #         seek_to_position()
+    def put(self, request, format=None):
+        miliseconds = request.GET.get('miliseconds')
+        room_code = self.request.session.get('room_code')
+        room = Room.objects.filter(code=room_code)
+        if room.exists():
+            room = room[0]
+        else:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
+        host = room.host
+
+        response = seek_in_song(host, miliseconds)
         
+        return Response(response, status.HTTP_200_OK)

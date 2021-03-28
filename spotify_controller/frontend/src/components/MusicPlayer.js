@@ -5,16 +5,23 @@ import {
   Card,
   IconButton,
   LinearProgress,
+  Slider,
 } from "@material-ui/core";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
 import SkipNextIcon from "@material-ui/icons/SkipNext";
 import SkipPreviousIcon from "@material-ui/icons/SkipPrevious";
 import { red, blue, green } from "@material-ui/core/colors";
+import SongSlider from "./SongSlider";
 
 export default class MusicPlayer extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      progress: this.props.time,
+      duration: this.props.duration,
+      homeless: false,
+    };
     this.getButtonColor = this.getButtonColor.bind(this);
     this.colourOfCounter = this.colourOfCounter.bind(this);
   }
@@ -77,7 +84,7 @@ export default class MusicPlayer extends Component {
     // need a value out of 100(percentage) for the linear progress of the song
     const songProgress = (this.props.time / this.props.duration) * 100;
     return (
-      <Card>
+      <Card classes={{ root: 'Card'}}>
         <Grid container alignItems="center">
           <Grid item align="center" xs={4}>
             <img src={this.props.image_url} height="100%" width="100%" />
@@ -126,8 +133,38 @@ export default class MusicPlayer extends Component {
             </div>
           </Grid>
         </Grid>
-        <LinearProgress variant="determinate" value={songProgress} />
+        <div class='bottombar'>
+        <Grid container alignItems="center" >
+          <Grid item align="center" xs={10}>
+           
+          <SongSlider
+            time={this.props.time}
+            duration={this.props.duration}
+            progress={songProgress}
+          ></SongSlider>       
+          </Grid>
+          <Grid item align="center" xs={2}>
+          <Typography variant='caption'>
+            
+              {miliseconds_to_minutes(this.props.time)}/
+              {miliseconds_to_minutes(this.props.duration)}
+            </Typography>
+            
+          </Grid>
+        </Grid>
+        </div>
       </Card>
     );
   }
+}
+
+function miliseconds_to_minutes(miliseconds) {
+  const minutes = Math.floor(miliseconds / (1000 * 60));
+  const seconds = (miliseconds - minutes * 1000 * 60) / 1000;
+  if (seconds < 10){
+    return `${minutes}:0${seconds.toFixed()}`;
+  }else{
+    return `${minutes}:${seconds.toFixed()}`;
+  }
+
 }

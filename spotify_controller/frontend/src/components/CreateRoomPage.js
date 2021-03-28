@@ -12,6 +12,7 @@ import { Alert } from "@material-ui/lab";
 
 import { Link } from "react-router-dom";
 import { FormControl, FormLabel } from "@material-ui/core";
+import Box from '@material-ui/core/Box';
 
 export default class CreateRoomPage extends Component {
   static defaultProps = {
@@ -155,14 +156,14 @@ export default class CreateRoomPage extends Component {
           </Collapse>
         </Grid>
         <Grid item xs={12} align="center">
-          <Typography component="h4" variant="h4">
+          <Typography component="h4" variant="h4" gutterBottom={true}>
             {title}
           </Typography>
         </Grid>
         <Grid item xs={12} align="center">
           <FormControl component="fieldset">
             <FormHelperText>
-              <div align="center">Playback Controls For Guests</div>
+              <div align="center" class="yellow">Playback Controls For Guests</div>
             </FormHelperText>
             <RadioGroup
               row
@@ -171,7 +172,7 @@ export default class CreateRoomPage extends Component {
             >
               <FormControlLabel
                 value="true"
-                control={<Radio color="primary" />}
+                control={<Radio color="secondary" />}
                 label="Play/Pause"
                 labelPlacement="bottom"
               />
@@ -184,7 +185,6 @@ export default class CreateRoomPage extends Component {
             </RadioGroup>
           </FormControl>
         </Grid>
-
         <Grid item xs={12} align="center">
           <FormControl>
             <TextField
@@ -192,10 +192,10 @@ export default class CreateRoomPage extends Component {
               type="number"
               onChange={this.handleVotesChange}
               defaultValue={this.state.votesToSkip}
-              inputProps={{ min: 1, style: { textAlign: "center" } }}
+              inputProps={{ min: 1, style: { textAlign: "center", color: 'yellow' } }}
             />
-            <FormHelperText>
-              <div align="center">Votes Required To Skip Song</div>
+            <FormHelperText >
+              <div align="center" class="yellow">Votes Required To Skip Song</div>
             </FormHelperText>
           </FormControl>
         </Grid>

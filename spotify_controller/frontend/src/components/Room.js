@@ -6,6 +6,7 @@ import { Grid, Button, Typography } from "@material-ui/core";
 import SettingsTwoToneIcon from "@material-ui/icons/SettingsTwoTone";
 import CreateRoomPage from "./CreateRoomPage";
 import MusicPlayer from "./MusicPlayer";
+import SearchBar from "./SearchBar";
 
 export default class Room extends Component {
   constructor(props) {
@@ -17,6 +18,8 @@ export default class Room extends Component {
       showSettings: false,
       spotifyAuthenticated: false,
       song: {},
+      time: 0,
+      isContent: false,
     };
     // Match stores the information about how we got to this page from the react router
     this.roomCode = this.props.match.params.roomCode;
@@ -28,12 +31,13 @@ export default class Room extends Component {
     this.authenticateSpotify = this.authenticateSpotify.bind(this);
     this.getRoomDetails = this.getRoomDetails.bind(this);
     this.getCurrentSong = this.getCurrentSong.bind(this);
+    this.renderMusicPlayer = this.renderMusicPlayer.bind(this);$
     // Gets the information and rerender the component since the state was changed
     this.getRoomDetails();
   }
   componentDidMount() {
     // this calls the getCurrentSong function every 1000 ms
-    // this is the pully technique (websockets are bettteerrr)
+    // this is the pulling technique (websockets are bettteerrr)
     this.interval = setInterval(this.getCurrentSong, 1000);
   }
   componentWillUnmount() {
@@ -79,14 +83,20 @@ export default class Room extends Component {
   getCurrentSong() {
     fetch("/spotify/current-song")
       .then((response) => {
-        if (!response.ok) {
-          return {};
+        if (response.status == 204) {
+          this.setState({isContent: false})
+          return null;
         } else {
+          console.log("im here")
+          this.setState({isContent: true})
           return response.json();
         }
       })
       .then((data) => {
-        this.setState({ song: data });
+        if (data != null){
+          //console.log(data)
+        this.setState({ song: data, time: data.time});
+        }
       });
   }
 
@@ -146,6 +156,22 @@ export default class Room extends Component {
       </Grid>
     );
   }
+
+  renderMusicPlayer(){
+    if (this.state.isContent){
+      return <MusicPlayer {...this.state.song} {...this.state} />
+    }
+    else{
+      return(
+        <Grid item xs={12} align="center">
+          <Typography>
+            Play a song on your spotify account.
+          </Typography>
+          </Grid >
+      )
+    }
+  }
+
   render() {
     if (this.state.showSettings) {
       return this.renderSettings();
@@ -157,7 +183,7 @@ export default class Room extends Component {
             Code: {this.roomCode}
           </Typography>
         </Grid>
-        <MusicPlayer {...this.state.song} {...this.state} />
+        {this.renderMusicPlayer()}
         {/* Conditionally show the settings button if the user
         is the host */}
         {this.state.isHost ? this.renderSettingsButton() : null}
