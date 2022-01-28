@@ -120,3 +120,11 @@ def seek_in_song(session_id, ms):
     response = put(url, headers=headers)
     print(response)
     return response
+
+def update_volume(session_id, new_volume):
+    tokens = get_user_tokens(session_id)
+    headers = {'Content-Type': 'application/json',
+               'Authorization': "Bearer " + tokens.access_token}
+    url = f"https://api.spotify.com/v1/me/player/volume?volume_percent={int(new_volume)}"
+    response = put(url, headers=headers)
+    return response

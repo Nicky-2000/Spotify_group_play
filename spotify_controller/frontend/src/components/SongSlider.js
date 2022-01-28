@@ -18,6 +18,7 @@ export default function SongSlider(props) {
 
   const handleChange = (event, value) => {
     setFlag(true);
+    console.log(props.volume)
     setValue(value);
   }
 
@@ -52,7 +53,6 @@ export default function SongSlider(props) {
   };
   
   return (
-    
     <div className={classes.root}>
       <Slider value={handleChangeFlag ? value: props.progress} onChangeCommitted={commitedChange} onChange={handleChange}></Slider>
     </div>

@@ -6,7 +6,7 @@ import { Grid, Button, Typography } from "@material-ui/core";
 import SettingsTwoToneIcon from "@material-ui/icons/SettingsTwoTone";
 import CreateRoomPage from "./CreateRoomPage";
 import MusicPlayer from "./MusicPlayer";
-import SearchBar from "./SearchBar";
+//import SearchBar from "./SearchBar";
 
 export default class Room extends Component {
   constructor(props) {
@@ -19,6 +19,7 @@ export default class Room extends Component {
       spotifyAuthenticated: false,
       song: {},
       time: 0,
+      volume: 0,
       isContent: false,
     };
     // Match stores the information about how we got to this page from the react router
@@ -31,14 +32,16 @@ export default class Room extends Component {
     this.authenticateSpotify = this.authenticateSpotify.bind(this);
     this.getRoomDetails = this.getRoomDetails.bind(this);
     this.getCurrentSong = this.getCurrentSong.bind(this);
-    this.renderMusicPlayer = this.renderMusicPlayer.bind(this);$
+    this.getCurrentPlaybackState = this.getCurrentPlaybackState.bind(this);
+    this.getInfo = this.getInfo.bind(this);
+    this.renderMusicPlayer = this.renderMusicPlayer.bind(this);
     // Gets the information and rerender the component since the state was changed
     this.getRoomDetails();
   }
   componentDidMount() {
     // this calls the getCurrentSong function every 1000 ms
-    // this is the pulling technique (websockets are bettteerrr)
-    this.interval = setInterval(this.getCurrentSong, 1000);
+    // this is the polling technique (websockets are bettteerrr.. but dont know how to use yet)
+    this.interval = setInterval(this.getInfo, 1000);
   }
   componentWillUnmount() {
     clearInterval(this.interval);
@@ -65,7 +68,7 @@ export default class Room extends Component {
       });
   }
   authenticateSpotify() {
-    // send request to back end to verify if the host
+    // send request to back end to verify if the host is authenticated
     fetch("/spotify/is-authenticated")
       .then((response) => response.json())
       .then((data) => {
@@ -80,6 +83,12 @@ export default class Room extends Component {
         }
       });
   }
+
+  getInfo() {
+    this.getCurrentPlaybackState()
+    this.getCurrentSong()
+  }
+
   getCurrentSong() {
     fetch("/spotify/current-song")
       .then((response) => {
@@ -87,8 +96,7 @@ export default class Room extends Component {
           this.setState({isContent: false})
           return null;
         } else {
-          console.log("im here")
-          this.setState({isContent: true})
+            this.setState({isContent: true})
           return response.json();
         }
       })
@@ -98,6 +106,25 @@ export default class Room extends Component {
         this.setState({ song: data, time: data.time});
         }
       });
+  }
+
+  getCurrentPlaybackState() {
+    // this is so we do not call the api when
+    // we know we would get an error because no song is playing
+    // if (this.state.isContent){
+    //   return null 
+    // }
+    fetch("/spotify/playback-state")
+    .then((response) => {
+      if (response.status == 200) {
+        return response.json();
+      }
+    })
+    .then((data) => {
+      if (data != null){
+        this.setState({volume: data.current_volume})
+      }
+    });
   }
 
   leaveButtonPressed() {

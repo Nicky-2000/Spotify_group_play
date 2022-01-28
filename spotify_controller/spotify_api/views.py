@@ -94,7 +94,6 @@ class CurrentSong(APIView):
             print('no content')
             return Response({}, status=status.HTTP_204_NO_CONTENT)
             
-
         item = response.get('item')
         duration = item.get('duration_ms')
         progress = response.get('progress_ms')
@@ -151,6 +150,8 @@ class PlaySong(APIView):
         
         return Response({}, status=status.HTTP_403_FORBIDDEN)
 
+
+# gave up on trying to access podcasts
 class CurrentPod(APIView):
     def get(self, request, format=None):
         
@@ -236,3 +237,41 @@ class SeekToPosition(APIView):
         response = seek_in_song(host, miliseconds)
         
         return Response(response, status.HTTP_200_OK)
+    
+class UpdateVolume(APIView):
+    def put(self, request, format=None):
+        new_volume = request.GET.get('volume')
+        room_code = self.request.session.get('room_code')
+        room = Room.objects.filter(code=room_code)
+        if room.exists():
+            room = room[0]
+        else:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
+        host = room.host
+
+        response = update_volume(host, new_volume)
+        
+        return Response(response, status.HTTP_200_OK)
+
+# this only returns current_volume right now...
+class GetPlayBackState(APIView):
+    def get(self, request, format=None):
+        room_code = self.request.session.get('room_code')
+        room = Room.objects.filter(code=room_code)
+        if room.exists():
+            room = room[0]
+        else:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
+        host = room.host
+        
+        endpoint = "player"
+        # send get request
+        response = execute_spotify_api_request(host, endpoint, 'GET')
+        
+        # get the info from json response
+        device = response.get('device')
+        playback_state = {
+            'current_volume' : device.get('volume_percent')
+        }
+        print(playback_state)
+        return Response(playback_state, status=status.HTTP_200_OK)

@@ -13,6 +13,7 @@ import SkipNextIcon from "@material-ui/icons/SkipNext";
 import SkipPreviousIcon from "@material-ui/icons/SkipPrevious";
 import { red, blue, green } from "@material-ui/core/colors";
 import SongSlider from "./SongSlider";
+import VolumeSlider from "./VolumeSlider";
 
 export default class MusicPlayer extends Component {
   constructor(props) {
@@ -135,21 +136,37 @@ export default class MusicPlayer extends Component {
         </Grid>
         <div class='bottombar'>
         <Grid container alignItems="center" >
-          <Grid item align="center" xs={10}>
-           
-          <SongSlider
-            time={this.props.time}
-            duration={this.props.duration}
-            progress={songProgress}
-          ></SongSlider>       
+          
+          <Grid item align="center" xs={1}>
+            <Typography variant='button'>
+              -
+            </Typography>
           </Grid>
+          
           <Grid item align="center" xs={2}>
-          <Typography variant='caption'>
-            
+            <VolumeSlider volume={this.props.volume}></VolumeSlider>
+          </Grid>
+
+          <Grid item align="center" xs={1}>
+            <Typography variant='button'>
+              +
+            </Typography>
+          </Grid>
+
+          <Grid item align="center" xs={6}>
+            <SongSlider
+              time={this.props.time}
+              duration={this.props.duration}
+              progress={songProgress}
+            ></SongSlider>       
+          </Grid>
+
+          <Grid item align="center" xs={2}>
+            <Typography variant='caption'>
               {miliseconds_to_minutes(this.props.time)}/
               {miliseconds_to_minutes(this.props.duration)}
-            </Typography>
-            
+            </Typography> 
+          
           </Grid>
         </Grid>
         </div>
